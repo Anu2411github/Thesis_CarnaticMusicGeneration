@@ -270,6 +270,7 @@ if __name__ == '__main__':
     ]
 
     GAN_params = [
+        {'z_dim': 256, 'nef':64, 'ndf':64, 'num_epochs': num_epochs, 'lr_g': 0.0005, 'lr_d': 0.00001, 'batch_size': 64}
         {'z_dim': 512, 'ngf':128, 'ndf':64, 'num_epochs': num_epochs, 'lr_g': 0.0005, 'lr_d': 0.00001, 'batch_size': 64},
         {'z_dim': 768, 'ngf':256, 'ndf':128, 'num_epochs': num_epochs, 'lr_g': 0.0005, 'lr_d': 0.00001, 'batch_size': 32},
     ]
