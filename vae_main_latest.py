@@ -60,8 +60,6 @@ class ConvEncoder(nn.Module):
         logvar = self.fc_logvar(x)
         return mu, logvar
     
-
-    # Define ResidualBlock class
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1):
         super(ResidualBlock, self).__init__()
@@ -83,7 +81,6 @@ class ResidualBlock(nn.Module):
         out += self.shortcut(x)
         return F.relu(out)
 
-# Define SelfAttention class
 class SelfAttention(nn.Module):
     def __init__(self, in_channels):
         super(SelfAttention, self).__init__()
@@ -104,7 +101,6 @@ class SelfAttention(nn.Module):
         out = self.gamma * out + x
         return out
 
-# Now include the ConvDecoder class
 class ConvDecoder(nn.Module):
     def __init__(self, latent_dim):
         super(ConvDecoder, self).__init__()
@@ -148,54 +144,39 @@ def train_GAN(generator, discriminator, num_epochs, dataloader, optimizer_D, opt
     all_losses_g = []
     all_losses_d = []
 
-    # Outer tqdm for epochs
     epoch_progress = tqdm(range(num_epochs), desc='Epochs')
     for epoch in epoch_progress:
         g_losses = []
         d_losses = []
         
-        # Inner tqdm for steps within each epoch
         step_progress = tqdm(enumerate(dataloader), desc='Steps', leave=False, total=len(dataloader))
         for i, (mel_spectrograms) in step_progress:
             mel_spectrograms = mel_spectrograms.to('cuda').unsqueeze(1)  # Add channel dimension
 
-            # Train Discriminator
             optimizer_D.zero_grad()
 
-            # Real data
             real_labels = torch.ones(mel_spectrograms.size(0)).to('cuda')
             real_outputs = discriminator(mel_spectrograms).view(-1)
             real_loss = criterion(real_outputs, real_labels)
-
-            # Fake data
             z = torch.randn(mel_spectrograms.size(0), z_dim, 1, 1, device='cuda')
             fake_data = generator(z)
             fake_labels = torch.zeros(fake_data.size(0)).to('cuda')
             fake_outputs = discriminator(fake_data.detach()).view(-1)
             fake_loss = criterion(fake_outputs, fake_labels)
-            
-            # Total discriminator loss
             d_loss = real_loss + fake_loss
             d_loss.backward()
             optimizer_D.step()
-
-            # Train Generator
             optimizer_G.zero_grad()
-            # Recompute fake_outputs for generator's loss
             fake_outputs = discriminator(fake_data).view(-1)
             g_loss = criterion(fake_outputs, real_labels)
             g_loss.backward()
             optimizer_G.step()
-
-            # Save losses for plotting
             g_losses.append(g_loss.item())
             d_losses.append(d_loss.item())
-
         all_losses_d.extend(d_losses)
         all_losses_g.extend(g_losses)
         epoch_progress.set_postfix_str(f'D loss: {sum(d_losses)/len(d_losses):.4f}, G loss: {sum(g_losses)/len(g_losses):.4f}')
 
-        # Generate and save samples and model
         if (epoch + 1) % 5 == 0:
             path = model_path + f'/epoch_{epoch + 1}'
             os.makedirs(path, exist_ok=True)
@@ -249,7 +230,6 @@ def train_model(model_type, params, dataloader, model_path):
         return vae, losses, optimizer
     
     elif model_type == 'GAN':
-        # Skip GAN training for now
         print("Skipping GAN training")
         return None, None, None, None, None, None  # Return placeholder values
 
@@ -287,7 +267,6 @@ if __name__ == '__main__':
         os.makedirs(os.path.join(base_path, 'wav'), exist_ok=True)
         os.makedirs(os.path.join(base_path, 'png'), exist_ok=True)
 
-        # Unpack the returned values and check if GAN training is skipped
         result = train_model('GAN', params, dataloader, base_path)
         if result[0] is None:
             print("GAN training skipped.")
@@ -295,7 +274,6 @@ if __name__ == '__main__':
 
         generator, discriminator, dlosses, glosses, optimizer_G, optimizer_D = result
 
-        # Only save if the models are not None
         if discriminator is not None and generator is not None:
             torch.save(discriminator.state_dict(), base_path+'/discriminator_final.pt')
             torch.save(generator.state_dict(), base_path+'/generator_final.pt')
@@ -333,15 +311,3 @@ if __name__ == '__main__':
         del vae, optimizer
         torch.cuda.empty_cache()
         gc.collect()
-
-
-
-    # for params in VAE_params:
-    #     print(f"Training VAE with params: {params}")
-    #     model = train_model('VAE', params, dataloader)
-    #     # train model 
-    #     # save model 
-    #     # generate samples
-    #     # save plots
-    #     # compute metrics of training samples
-    #     # Free GPU memory
