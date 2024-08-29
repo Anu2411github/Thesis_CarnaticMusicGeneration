@@ -79,4 +79,4 @@ python generate_samples.py --model_path path_to_saved_generator
 
 # Contact
 For any questions or collaborations, please contact me at
-# sanusha197@gmail.com
+'sanusha197@gmail.com'
