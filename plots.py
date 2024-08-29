@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 
-import matplotlib.pyplot as plt
-
 def plot_losses(glosses, dlosses, path=None, vae=False):
     if vae:
         plt.figure(figsize=(12, 6))
