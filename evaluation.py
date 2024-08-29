@@ -73,15 +73,12 @@ def MS_SSIM(real_samples, generated_samples):
                 print(real_tensor.shape, gen_tensor.shape)
                 raise ValueError("Input images must have the same dimensions")
 
-            # Compute MS-SSIM between the generated image and the current real image
             ms_ssim_value = ms_ssim(gen_tensor, real_tensor, data_range=2.0)
             ms_ssim_values.append(ms_ssim_value.item())
         
-        # Calculate the average MS-SSIM for the current generated image
         average_ms_ssim = sum(ms_ssim_values) / len(ms_ssim_values)
         ms_ssim_averages.append(average_ms_ssim)
     
-    # Return the list of average MS-SSIM scores for each generated image
     return np.mean(ms_ssim_averages)
 '''
 #def get_vggish_embeddings(samples):
@@ -167,8 +164,7 @@ def evaluate_samples(real_train_samples, real_test_samples, generated_samples_li
     real_test_samples = real_test_samples[:10]
 
     #metrics = ['MSE', 'Spectral Convergance', 'MS-SSIM', 'FAD']
-    metrics = ['MSE', 'MS-SSIM', 'FAD']
-    #metrics = ['FAD']
+    metrics = ['MSE', 'MS-SSIM']
     models_metrics = {}
 
     for idx, generated_samples in enumerate(generated_samples_list):
@@ -261,7 +257,6 @@ def plot_similarity(real_train_samples, real_test_samples, generated_samples_lis
         for i in range(len(generated_samples_list))
     ]
     
-    # Plotting
     plt.figure(figsize=(10, 8))
     plt.scatter(train_samples_reduced[:, 0], train_samples_reduced[:, 1], label='Real Train', alpha=0.5)
     plt.scatter(val_samples_reduced[:, 0], val_samples_reduced[:, 1], label='Real Validation', alpha=0.5)
@@ -315,8 +310,7 @@ def plot_epoch_metrics(model_paths, model_names):
     epochs_samples_paths = [[model_path + f'/epoch_{i}' for i in range(5, 105,5)] for model_path in model_paths]
     #metrics = ['MSE', 'Spectral Convergance', 'MS-SSIM']
     metrics = ['MSE', 'MS-SSIM', 'FAD']
-    #metrics = ['FAD']
-    paths = ['/home/msp/Downloads/Indian_Raga_Navee_Dataset', '/home/msp/Anusha/Thesis/dataset/CMR_full_dataset_1.0/audio','/home/msp/Downloads/carnatic_varnam_(1)/carnatic_varnam_1.0/Audio']
+    paths = ['/home/msp/Downloads/Indian_Raga_Dataset', '/home/msp/Anusha/Thesis/dataset/CMR_full_dataset_1.0/audio','/home/msp/Downloads/carnatic_varnam_(1)/carnatic_varnam_1.0/Audio']
     test_data_path = ['/home/msp/Anusha/Thesis/dataset/CMR_subset_1.0/CMR_subset_1.0/audio']
     data = MusicDataset(paths, segment_length=200, target_sr=16000, train=True)
     test_data = MusicDataset(test_data_path, segment_length=200, target_sr=16000, train=False)
@@ -373,8 +367,11 @@ if __name__ == '__main__':
 
     # plot_epoch_metrics function - will give the metrics for each model at different epochs (will also make plots for each metric)
 
-    #model_paths = ['/home/msp/Anusha/Thesis_New/models/GAN_256_64_64', '/home/msp/Anusha/Thesis_New/models/GAN_512_128_64','/home/msp/Anusha/Thesis_New/models/GAN_768_256_128']
-    #model_names = ['DCGAN_001', 'DCGAN_002', 'DCGAN_003']
-    model_paths = ['/home/msp/Anusha/Thesis_New/models/VAE_256_64_64', '/home/msp/Anusha/Thesis_New/models/VAE_512_64_128','/home/msp/Anusha/Thesis_New/models/VAE_768_128_256']
-    model_names = ['VAE_256_64_64', 'VAE_512_64_128', 'VAE_768_128_256']
+    #This is for DCGAN
+    model_paths = ['/home/msp/Anusha/Thesis_New/models/GAN_256_64_64', '/home/msp/Anusha/Thesis_New/models/GAN_512_128_64','/home/msp/Anusha/Thesis_New/models/GAN_768_256_128']
+    model_names = ['DCGAN_001', 'DCGAN_002', 'DCGAN_003']
+    
+    # Uncomment this to run for VAE
+    # model_paths = ['/home/msp/Anusha/Thesis_New/models/VAE_256_64_64', '/home/msp/Anusha/Thesis_New/models/VAE_512_64_128','/home/msp/Anusha/Thesis_New/models/VAE_768_128_256']
+    # model_names = ['VAE_256_64_64', 'VAE_512_64_128', 'VAE_768_128_256']
     plot_epoch_metrics(model_paths, model_names)
