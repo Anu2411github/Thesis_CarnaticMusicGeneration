@@ -23,8 +23,6 @@ from scipy.io import wavfile
 from scipy.linalg import sqrtm
 
 def MSE(real_samples, generated_samples):
-    # for each generated sample, find miunum MSE with one real sample
-    # return the average of all the minimum MSEs
     min_mses = [] 
     for gen_sample in generated_samples:
         mse_list = [np.mean((gen_sample - real.detach().cpu().numpy())**2) for real in real_samples]
@@ -42,25 +40,19 @@ def MSE(real_samples, generated_samples):
 #     Returns:
 #     float: The average spectral convergence metric for the best match between generated and any real samples.
 #     """
-#     # Store the minimum spectral convergence for each generated sample
 #     min_convergences = []
 
-#     # Iterate over each generated spectrogram
 #     for generated in generated_samples:
-#         # Calculate the spectral convergence between this generated and all real spectrograms
 #         convergences = [np.mean(np.abs(generated - real.detach().cpu().numpy()) / (np.abs(real.detach().cpu().numpy()) + np.abs(generated) + 1e-8)) for real in real_samples]
         
-#         # Find the minimum convergence for this generated spectrogram (best match scenario)
 #         min_convergences.append(min(convergences))
 
-#     # Return the average of the minimum convergences
 #     return np.mean(min_convergences)
 
 def MS_SSIM(real_samples, generated_samples):
-    # Convert real_samples and generated_samples to tensors
     transform = transforms.ToTensor()
-    real_tensors = [img.unsqueeze(0).unsqueeze(0) for img in real_samples]  # Convert each image to a tensor with batch dimension
-    generated_tensors = [transform(img).unsqueeze(0).to('cuda') for img in generated_samples]  # Same for generated images
+    real_tensors = [img.unsqueeze(0).unsqueeze(0) for img in real_samples] 
+    generated_tensors = [transform(img).unsqueeze(0).to('cuda') for img in generated_samples] 
 
     ms_ssim_averages = []
     
@@ -68,7 +60,6 @@ def MS_SSIM(real_samples, generated_samples):
         ms_ssim_values = []
         
         for real_tensor in real_tensors:
-            # Ensure both tensors have the same shape
             if real_tensor.shape != gen_tensor.shape:
                 print(real_tensor.shape, gen_tensor.shape)
                 raise ValueError("Input images must have the same dimensions")
@@ -124,19 +115,15 @@ def MS_SSIM(real_samples, generated_samples):
     Returns:
     float: The FAD score.
     """
-    # Compute mean and covariance of real embeddings
     mu_real = np.mean(real_embeddings, axis=0)
     sigma_real = np.cov(real_embeddings, rowvar=False)
     
-    # Compute mean and covariance of generated embeddings
     mu_generated = np.mean(generated_embeddings, axis=0)
     sigma_generated = np.cov(generated_embeddings, rowvar=False)
     
-    # Compute FAD using the Fréchet distance formula
     mu_diff = mu_real - mu_generated
     covmean, _ = sqrtm(sigma_real.dot(sigma_generated), disp=False)
     
-    # Check if covmean is complex due to numerical issues
     if np.iscomplexobj(covmean):
         covmean = covmean.real
 
@@ -189,12 +176,10 @@ def evaluate_samples(real_train_samples, real_test_samples, generated_samples_li
             #     generated_vggish_embeddings = get_vggish_embeddings(generated_samples)
 
             # if metric == 'FAD':
-            #     # Extract embeddings
             #     train_vggish_embeddings = get_vggish_embeddings(real_train_samples)
             #     val_vggish_embeddings = get_vggish_embeddings(real_test_samples)
             #     generated_vggish_embeddings = get_vggish_embeddings(generated_samples)
 
-            #     # Compute FAD
             #     train_metric = FAD(train_vggish_embeddings, generated_vggish_embeddings)
             #     val_metric = FAD(val_vggish_embeddings, generated_vggish_embeddings)
 
@@ -229,11 +214,9 @@ def plot_similarity(real_train_samples, real_test_samples, generated_samples_lis
     from sklearn.manifold import TSNE
     from sklearn.decomposition import PCA
     import umap
-    # Combine all samples for dimensionality reduction
     all_samples = [real_train_samples, real_test_samples] + generated_samples_list
     all_samples_combined = np.vstack(all_samples)
-    
-    # Apply the selected dimensionality reduction method
+
     if method == 'tsne':
         reducer = TSNE(n_components=2, random_state=42)
     elif method == 'pca':
@@ -245,7 +228,6 @@ def plot_similarity(real_train_samples, real_test_samples, generated_samples_lis
     
     reduced_samples = reducer.fit_transform(all_samples_combined)
     
-    # Split the reduced samples back into their respective groups
     num_train_samples = len(real_train_samples)
     num_val_samples = len(real_test_samples)
     
@@ -285,23 +267,18 @@ def plot_epoch_metrics(model_paths, model_names):
         for idx, model in enumerate(model_paths):
             plt.plot(range(5, 105, 5), data[model], label=model_names[idx], marker='o', linewidth=2)
 
-        # Customize ticks and labels
         plt.xticks(ticks=range(5, 105, 10), fontsize=12)
         plt.yticks(fontsize=12)
         plt.xlabel('Epoch', fontsize=14)
         plt.ylabel(ylabel, fontsize=14)
         plt.title(title, fontsize=16, fontweight='bold')
         
-        # Add grid for better readability
         plt.grid(True, linestyle='--', alpha=0.7)
         
-        # Improve legend placement and appearance
         plt.legend(title='Models', fontsize=12, title_fontsize='13', loc='best', frameon=True)
         
-        # Tight layout to reduce white space
         plt.tight_layout()
         
-        # Save the plot with a high DPI for better quality
         plt.savefig(f'{filename}', dpi=300)
         plt.close()
 
@@ -351,15 +328,8 @@ def plot_epoch_metrics(model_paths, model_names):
                 chart_data_train[model_paths[idx]].append(train_metric)
                 chart_data_val[model_paths[idx]].append(val_metric)
 
-        # Plot for Train data
-        # Plot for Training data
         create_plot(chart_data_train, f'{metric} - Train Data', metric, f'{metric}_train_metric.png')
-
-        # Plot for Validation data
         create_plot(chart_data_val, f'{metric} - Test Data', metric, f'{metric}_test_metric.png')
-        # Function to customize and save the plot
-
-            
             
 if __name__ == '__main__':
 
