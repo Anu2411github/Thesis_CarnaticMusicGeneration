@@ -25,6 +25,10 @@ The dataset consists of music audio files, which are processed into Mel spectrog
 Sample Rate: 16 kHz
 Segment Length: 200 frames
 
+Dataset 1 - https://compmusic.upf.edu/carnatic-rhythm-dataset
+Dataset 2 - https://compmusic.upf.edu/carnatic-varnam-dataset
+Dataset 3 - https://www.kaggle.com/datasets/kcwaghmarewaghmare/indian-music-raga/data
+
 # Training
 
 DCGAN Training
