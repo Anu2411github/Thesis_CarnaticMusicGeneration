@@ -85,7 +85,6 @@ def vae_loss(reconstructed, original, mu, logvar, beta):
     
     reconstructed_sigmoid = torch.sigmoid(reconstructed)
     original_sigmoid = torch.sigmoid(original)
-    # Calculate Binary Cross-Entropy Loss
     bce_loss = nn.functional.binary_cross_entropy(reconstructed_sigmoid, original_sigmoid, reduction='mean')
 
     kld_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
@@ -155,12 +154,12 @@ def train_VAE(vae, num_epochs, dataloader, optimizer, model_path):
 
 def train_model(model_type, params, dataloader,model_path):
     if model_type == 'VAE':
-        # initialize VAE
         vae = VAE(latent_dim=params['z_dim'], nef=params['nef'], ndf=params['ndf'], nc=1)
         vae = vae.to('cuda')
         optimizer = torch.optim.Adam(vae.parameters(), lr=params['lr'])
         vae, all_mse_losses, all_kld_losses = train_VAE(vae, params['num_epochs'], dataloader, optimizer, model_path)
         return vae, all_mse_losses, all_kld_losses, optimizer
+    #for GAN
     elif model_type == 'GAN':
         G, D = init_GAN(ngpu=1, nz=params['z_dim'], ngf=params['ngf'], nc=1, ndf=params['ndf'])
         G = G.to('cuda')
@@ -203,8 +202,8 @@ if __name__ == '__main__':
          os.makedirs(base_path, exist_ok=True)
          os.makedirs(os.path.join(base_path, 'plots'), exist_ok=True)
          os.makedirs(os.path.join(base_path, 'npy'), exist_ok=True)
-        os.makedirs(os.path.join(base_path, 'wav'), exist_ok=True)
-        os.makedirs(os.path.join(base_path, 'png'), exist_ok=True)
+         os.makedirs(os.path.join(base_path, 'wav'), exist_ok=True)
+         os.makedirs(os.path.join(base_path, 'png'), exist_ok=True)
 
         generator, discriminator, dlosses, glosses, optimizer_G, optimizer_D = train_model('GAN', params, dataloader, base_path)
 
@@ -218,7 +217,7 @@ if __name__ == '__main__':
 
         optimizer_G.zero_grad(set_to_none=True)
         optimizer_D.zero_grad(set_to_none=True)
-        # Free GPU memory
+
         del generator, discriminator, optimizer_G, optimizer_D
         torch.cuda.empty_cache()  # Clear cache
         gc.collect()  # Clean up Python's garbage collection
