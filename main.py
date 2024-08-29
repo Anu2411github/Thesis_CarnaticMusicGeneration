@@ -181,9 +181,9 @@ if __name__ == '__main__':
     data = MusicDataset(paths, segment_length=200, target_sr=16000)
     num_epochs = 100
     VAE_params = [
-        {'z_dim': 256, 'nef':64 , 'ndf':64, 'num_epochs': num_epochs, 'lr': 1e-5, 'batch_size': 4},
-        {'z_dim': 512, 'nef':64 , 'ndf':128, 'num_epochs': num_epochs, 'lr': 1e-5, 'batch_size': 4},
-        {'z_dim': 768, 'nef':128 , 'ndf':256, 'num_epochs': num_epochs, 'lr': 1e-5, 'batch_size': 4},
+        {'z_dim': 256, 'nef':64 , 'ndf':64, 'num_epochs': num_epochs, 'lr': 1e-5, 'batch_size': 64},
+        {'z_dim': 512, 'nef':64 , 'ndf':128, 'num_epochs': num_epochs, 'lr': 1e-5, 'batch_size': 64},
+        {'z_dim': 768, 'nef':128 , 'ndf':256, 'num_epochs': num_epochs, 'lr': 1e-5, 'batch_size': 32},
     ]
 
     GAN_params = [
