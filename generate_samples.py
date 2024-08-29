@@ -15,16 +15,13 @@ def generate_samples(generator, z_dim, num_samples=1, path_npy=None, path_png=No
     generated_data = generated_data.squeeze(1).cpu().numpy()
 
     spectrogram_paths = []
-    # Save the generated spectrograms in the specified directory
     for i, spectrogram in enumerate(generated_data):
         file_path = os.path.join(path_npy, f'generated_spectrogram_{i}.npy')
         np.save(file_path, spectrogram)
         spectrogram_paths.append(file_path)
 
-    # Calculate the number of rows needed
-    num_rows = (num_samples + 2) // 3  # +2 ensures rounding up when dividing by 3
+    num_rows = (num_samples + 2) // 3
 
-    # Plot the generated spectrograms
     fig, axes = plt.subplots(num_rows, 3, figsize=(15, 5 * num_rows))
     axes = axes.flatten()
 
@@ -32,9 +29,8 @@ def generate_samples(generator, z_dim, num_samples=1, path_npy=None, path_png=No
         ax = axes[i]
         ax.imshow(np_mel)
         ax.set_title(f'Spectrogram {i}')
-        ax.axis('off')  # Hide the axis for a cleaner look
+        ax.axis('off')
     
-    # Hide any remaining empty subplots
     for j in range(i+1, len(axes)):
         axes[j].axis('off')
 
